@@ -8,6 +8,7 @@ Voor mijn concept heb ik het volgende in gedachte:
 3. Ik zet dat antwoord om naar spotify api call
 4. Ik pak de response van spotify
 5. Ik weergeef de spotify antwoorden op een interessante manier - hierbij web API's gebruiken.
+6. 
+<img width="991" height="644" alt="Screenshot 2026-04-02 at 13 14 10" src="https://github.com/user-attachments/assets/ac99da27-0358-4675-a970-7fcf323267f5" />
 
-Schematisch een idee in figma gemaakt:
 
