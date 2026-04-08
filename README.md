@@ -22,3 +22,10 @@ Voor mijn concept heb ik het volgende in gedachte:
 
 - Stapsgewijs werken
 - Mock pagina is prima
+
+## Checkout week 2 dag 1
+Vandaag heb ik als eerst de workshop gevolgd over componenten, waarna ik aan de slag ben gegaan met de Spotify (web) API. Ik heb de authentication opgezet en de eerste calls gemaakt. Daarna ben ik gaan kijken in hoeverre ik mijn idee kan toepassen zoals ik het oorspronkelijk in gedachte had. Een aantal van de endpoints die ik dacht nodig te moeten hebben zijn deprecated zoals artist top tracks en similar artists, dus ben ik gaan testen met de search endpoint waarmee je met een iets omstandigere manier wel populaire nummers van een artiest kan pakken. Het AI gedeelte komt dan van pas voor vergelijkbare artiesten.
+
+<img width="670" height="117" alt="image" src="https://github.com/user-attachments/assets/0ba9bbe8-2030-4967-bb5c-40d0b5f881d6" />
+<img width="763" height="119" alt="image" src="https://github.com/user-attachments/assets/8e25572e-e75c-4bf5-9530-4ad02eeaf2f8" />
+
