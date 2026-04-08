@@ -12,7 +12,7 @@ Voor mijn concept heb ik het volgende in gedachte:
 <img width="991" height="644" alt="Screenshot 2026-04-02 at 13 14 10" src="https://github.com/user-attachments/assets/ac99da27-0358-4675-a970-7fcf323267f5" />
 
 
-**Feedback idee**
+## Feedback idee
 
 - Begin met sotify API onderzoeken, authenticatie, data ophalen op basis van vaste antwoorden
 - Daarna AI-laag toevoegen
