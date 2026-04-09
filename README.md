@@ -37,4 +37,9 @@ Testen met de search endpoint, api call om 3 relevante nummers van de artiest te
 
 <img width="825" height="199" alt="Screenshot 2026-04-08 at 20 21 20" src="https://github.com/user-attachments/assets/79da38a9-5a40-4ac9-83d4-c9d75baa63ce" />
 
+## Bronnen
+
+https://developer.spotify.com/documentation/web-api/tutorials/getting-started
+
+https://curlconverter.com/javascript/
 
