@@ -37,9 +37,24 @@ Testen met de search endpoint, api call om 3 relevante nummers van de artiest te
 
 <img width="825" height="199" alt="Screenshot 2026-04-08 at 20 21 20" src="https://github.com/user-attachments/assets/79da38a9-5a40-4ac9-83d4-c9d75baa63ce" />
 
+# Voortgang/checkout
+Ik ben de hele dag bezig geweest met Web ai en uitvinden hoe het werkt. Ik moest verschillende dingen in chrome aanzetten en vervolgens het model lokaal downloaden, met veel errors in de tussentijd (vooral typescript). 
+
+<img width="706" height="518" alt="Screenshot 2026-04-10 at 09 32 21" src="https://github.com/user-attachments/assets/96626faf-4423-442f-ab47-8900820556ba" />
+
+Daarnaast heb ik de input gekoppeld aan een textarea en de output aan een p om de output van web ai te testen. 
+
+<img width="317" height="111" alt="Screenshot 2026-04-10 at 09 44 08" src="https://github.com/user-attachments/assets/b8f13ef0-4294-48fd-847d-c454c7a9a35a" />
+
+Na wat testen met de output en de systemprompt zijn er zeker beperkingen dus heb ik als "fallback" ook een gratis LLM geimplementeerd die dan antwoord geeft in plaats van web ai als de gebruiker deze niet lokaal heeft draaien.
+
+<img width="782" height="461" alt="Screenshot 2026-04-10 at 09 40 53" src="https://github.com/user-attachments/assets/790e9faa-1cef-4fe8-9ee4-9a9e0194c764" />
+
+
 ## Bronnen
 
 https://developer.spotify.com/documentation/web-api/tutorials/getting-started
 
 https://curlconverter.com/javascript/
 
+https://developer.chrome.com/docs/ai/prompt-api
