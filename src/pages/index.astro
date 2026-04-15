@@ -1,6 +1,5 @@
 ---
 
-
 const response = await fetch("https://accounts.spotify.com/api/token", {
   method: "POST",
   headers: {
@@ -16,44 +15,29 @@ const response = await fetch("https://accounts.spotify.com/api/token", {
 const data = await response.json()
 const token = data.access_token 
 
-const searchResponse = await fetch("https://api.spotify.com/v1/search?q=artists similar to mfdoom&type=artist&limit=5", {
-  headers: {
-    Authorization: `Bearer ${token}`
-  }
-})
-
-const searchData = await searchResponse.json()
-// console.log(searchData)
-
-
-const res = await fetch("https://api.spotify.com/v1/search?q=mf+doom&type=track&limit=3", {
+const res = await fetch("https://api.spotify.com/v1/search?q=mf+doom&type=track&limit=5", {
   headers: {
     Authorization: `Bearer ${token}`
   }
 })
 const songdata = await res.json()
 const songs = songdata.tracks.items
-console.log(songs[0].name, songs[1].name, songs[2].name)
-
-// const res2 = await fetch("https://api.spotify.com/v1/search?q=lupefiasco&type=track&limit=5", {
-//   headers: {
-//     Authorization: `Bearer ${token}`
-//   }
-// })
-// const tdata2 = await res2.json()
-// const tracks2 = tdata2.tracks.items
-// console.log(tracks2[0].name, tracks2[1].name, tracks2[2].name)
+songs.forEach(song => {
+  // console.log(song.name)
+});
 
 
-const artist = await fetch("https://api.spotify.com/v1/artists/2pAWfrd7WFF3XhVt9GooDL", {
+const searchResponse = await fetch("https://api.spotify.com/v1/search?q=mfdoom&type=artist&limit=5", {
   headers: {
     Authorization: `Bearer ${token}`
   }
 })
 
-const artistdata = await artist.json()
-// console.log(artistdata)
-
+const searchData = await searchResponse.json()
+const artists = searchData.artists.items
+artists.forEach(artist => {
+  console.log(artist.name)
+});
 
 
 ---
@@ -68,13 +52,81 @@ const artistdata = await artist.json()
 		<title>Astro</title>
 	</head>
 	<body>
-		<h1>{artistdata.name}</h1>
-		<ul>
-		</ul>
-		<ul>
-  {searchData.artists.items.map(artist => (
-    <li>{artist.name}</li>
+<ul>
+  {songs.map(song => (
+    <li>{song.name}</li>
   ))}
 </ul>
+
+<form action="submit">
+<textarea name="prompt" id="userPrompt"></textarea>
+<button type="submit">Verstuur</button>
+</form>
+<p>
+  
+</p>
 	</body>
 </html>
+
+<!-- Hulp van Jad -->
+<script>
+    // @ts-nocheck
+  const form = document.querySelector("form");
+  const textarea = document.querySelector("textarea");
+  const aiAnswer = document.querySelector("p")
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const userInput = textarea.value;
+
+    if ('LanguageModel' in self) {
+      const available = await LanguageModel.availability();
+      const session = await LanguageModel.create({
+  initialPrompts: [
+    {
+      role: "system",
+      content: "Je geeft drie muziek artiesten terug gebaseerd op wat de gebruiker als input geeft, alleen de artiesten namen en niks anders. Als de gebruiker een muziekartiest op geeft geef dan drie artiesten die vergelijkbare muziek hebben. Gebruik geen markdown of andere opmaak in je berichten. Als je niks uit de user input kan halen en/of de opgegeven input is een naam maar geen spotify artiest zeg dan aan: Sorry hier kan ik geen artiesten uit halen, probeer wat anders!"
+    }
+  ]
+});
+      
+      const result = await session.prompt(userInput);
+      aiAnswer.innerHTML = result
+      session.destroy();
+    }
+  });
+
+  // @ts-nocheck
+
+    
+     
+      const groqResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${import.meta.env.PUBLIC_GROQ_KEY}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          model: "llama-3.3-70b-versatile",
+          messages: [
+            {
+              role: "system",
+              content: "Je geeft drie muziek artiesten terug gebaseerd op wat de gebruiker als input geeft, alleen de artiesten namen en niks anders. Als de gebruiker een muziekartiest op geeft geef dan drie artiesten die vergelijkbare muziek hebben. Gebruik geen markdown of andere opmaak in je berichten. Als je niks uit de user input kan halen en/of de opgegeven input is een naam maar geen spotify artiest zeg dan aan: Sorry hier kan ik geen artiesten uit halen, probeer wat anders!"
+            },
+            {
+              role: "user",
+              content: userInput
+            }
+          ]
+        })
+      });
+      const groqData = await groqResponse.json();
+      const artistSuggestions = groqData.choices[0].message.content;
+      aiAnswer.innerHTML = artistSuggestions;
+    // })
+</script>
+
+
+
+
+
