@@ -1,3 +1,5 @@
+// Hulp van Jad
+
 export async function GET({ url }) {
   const userInput = url.searchParams.get("artist");
 
@@ -17,7 +19,7 @@ export async function GET({ url }) {
     {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${import.meta.env.PUBLIC_GROQ_KEY}`,
+        Authorization: `Bearer ${import.meta.env.PRIVATE_GROQ_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
@@ -40,8 +42,6 @@ export async function GET({ url }) {
   const artistSuggestions = groqData.choices[0].message.content;
   console.log(artistSuggestions);
 
-  // je token wordt alleen hier gebruikt
-  // ..
   return new Response(
     JSON.stringify({
       answer: artistSuggestions,
