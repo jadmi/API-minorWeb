@@ -28,7 +28,7 @@ export async function GET({ url }) {
           {
             role: "system",
             content:
-              "Je geeft drie muziek artiesten terug gebaseerd op wat de gebruiker als input geeft, alleen de artiesten namen en niks anders. Als de gebruiker een muziekartiest op geeft geef dan drie artiesten die vergelijkbare muziek hebben. Gebruik geen markdown of andere opmaak in je berichten. Als je niks uit de user input kan halen en/of de opgegeven input is een naam maar geen spotify artiest zeg dan aan: Sorry hier kan ik geen artiesten uit halen, probeer wat anders!",
+              "Je geeft drie muziek artiesten terug gebaseerd op wat de gebruiker als input geeft, alleen de artiesten namen en niks anders. Als de gebruiker een muziekartiest op geeft geef dan drie artiesten die vergelijkbare muziek hebben. Gebruik geen markdown of andere opmaak in je berichten. elke artiest op een nieuwe regel. Geen markdown, geen nummering, geen extra tekst. Geen lege regels. Als je niks uit de user input kan halen en/of de opgegeven input is een naam maar geen spotify artiest zeg dan aan: Sorry hier kan ik geen artiesten uit halen, probeer wat anders!",
           },
           {
             role: "user",
@@ -40,11 +40,32 @@ export async function GET({ url }) {
   );
   const groqData = await groqResponse.json();
   const artistSuggestions = groqData.choices[0].message.content;
-  console.log(artistSuggestions);
+  const artistNames = artistSuggestions.split("\n");
+  console.log(artistNames);
 
-  return new Response(
-    JSON.stringify({
-      answer: artistSuggestions,
+  const tokenRes = await fetch("https://accounts.spotify.com/api/token", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({
+      grant_type: "client_credentials",
+      client_id: import.meta.env.SPOTIFY_CLIENT_ID,
+      client_secret: import.meta.env.SPOTIFY_CLIENT_SECRET,
+    }),
+  });
+  const { access_token } = await tokenRes.json();
+
+  // Promise.all --> hulp van Jad
+  const results = await Promise.all(
+    artistNames.map(async (artist) => {
+      const searchRes = await fetch(
+        `https://api.spotify.com/v1/search?q=${artist}&type=track&limit=3`,
+        { headers: { Authorization: `Bearer ${access_token}` } },
+      );
+      const searchData = await searchRes.json();
+      return { artist, tracks: searchData.tracks.items };
+      console.log(tracks);
     }),
   );
+
+  return new Response(JSON.stringify({ results }));
 }
