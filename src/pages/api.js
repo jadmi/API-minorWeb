@@ -3,6 +3,7 @@
 export async function GET({ url }) {
   const userInput = url.searchParams.get("artist");
 
+  // Call naar de LLM maken, die geeft 3 artiesten terug en die geef ik weer door aan spotify.
   const groqResponse = await fetch(
     "https://api.groq.com/openai/v1/chat/completions",
     {
@@ -28,6 +29,7 @@ export async function GET({ url }) {
     },
   );
   const groqData = await groqResponse.json();
+  // Data uit groq response ophalen
   const artistSuggestions = groqData.choices[0].message.content;
   console.log(JSON.stringify(artistSuggestions));
   if (
@@ -39,6 +41,7 @@ export async function GET({ url }) {
   const artistNames = artistSuggestions.split("\n");
   console.log(artistNames);
 
+  // Spotify token opvragen
   const tokenRes = await fetch("https://accounts.spotify.com/api/token", {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -52,7 +55,7 @@ export async function GET({ url }) {
 
   // Promise.all --> hulp van Jad
   // https://www.reddit.com/r/learnjavascript/comments/ylcdrt/what_does_the_map_function_actually_do/
-
+  // Met promise all kan ik meerdere fetches tegelijkertijd doen, in dit geval 3 fetches voor elke artiest om de data ervan op te halen.
   const results = await Promise.all(
     artistNames.map(async (artist) => {
       const searchRes = await fetch(

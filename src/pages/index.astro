@@ -1,14 +1,6 @@
 ---
 
 
-
-// const searchRes = await fetch("https://api.spotify.com/v1/search?q=j+dilla&type=track&limit=3", {
-//   headers: { Authorization: `Bearer ${access_token}` }
-// });
-// const searchData = await searchRes.json();
-// const tracks = searchData.tracks.items;
-
-
 ---
 
 <html lang="en">
@@ -241,6 +233,7 @@ function renderResults(results) {
   const resultsContainer = document.getElementById("result");
   resultsContainer.innerHTML = "";
 
+  // Resultaten visueel weergeven, artiest naam, album cover en nummer.
   results.forEach(({ artist, tracks }) => {
     const artistContainer = document.createElement("div");
     artistContainer.classList.add("artistContainer");
@@ -260,6 +253,7 @@ function renderResults(results) {
   });
 }
 
+// Error catching wanneer je submit zonder iets in te vullen
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
   const userInput = textarea.value;
@@ -271,6 +265,7 @@ form.addEventListener("submit", async (e) => {
   setPlaying(true);
   aiAnswer.textContent = "Even zoeken...";
 
+  // WebAI call, hulp van Jad
   if ('LanguageModel' in self) {
     const session = await LanguageModel.create({
       initialPrompts: [{
@@ -282,8 +277,11 @@ form.addEventListener("submit", async (e) => {
     aiAnswer.innerHTML = result;
     session.destroy();
   } else {
+
 const response = await fetch(`/api?artist=${userInput}`);  
 const data = await response.json();
+
+// Error als er niks gevonden kan worden of geen input
 if (data.error) {
   aiAnswer.textContent = data.error;
   setPlaying(false);
@@ -293,8 +291,6 @@ if (data.error) {
 }
 
 setPlaying(false);
-
-
 
 
 });
