@@ -50,6 +50,9 @@ Na wat testen met de output en de systemprompt zijn er zeker beperkingen dus heb
 
 <img width="782" height="461" alt="Screenshot 2026-04-10 at 09 40 53" src="https://github.com/user-attachments/assets/790e9faa-1cef-4fe8-9ee4-9a9e0194c764" />
 
+## Tussentijd
+Bezig geweest met de techniek --> api calls en begin aan visueel gemaakt
+
 
 # Aan het eind samenvatting van stappen
 
