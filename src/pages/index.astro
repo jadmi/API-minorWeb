@@ -21,37 +21,27 @@
 		<title>SpotifyMatch</title>
 	</head>
 	<body>
-
+<div class="input">
 <h1>Kies een artiest of vibe!</h1>
 <form action="submit">
 <div class="inputrow">
-  <textarea id="userPrompt" placeholder="MF DOOM... Late night car drive..." rows="1"></textarea>
+  <textarea id="userPrompt" placeholder="Kendrick Lamar... Late night car drive..." rows="1"></textarea>
   <button type="submit">
     <svg id="iconPlay" viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
     <svg id="iconPause" viewBox="0 0 24 24" style="display:none"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
   </button>
 </div>
 </form>
-<p>
-  
-</p>
+</div>
+<div id="result"></div>
 
-<!-- <h2>Artiest - MF DOOM</h2>
- <div class="tracks">
-  {tracks.map(track => (
-    <a class="track-card" href={track.external_urls.spotify} target="_blank">
-      <img src={track.album.images[1].url} alt={track.name} />
-      <span>{track.name}</span>
-    </a>
-  ))}
-</div> -->
 
 
 	</body>
 
 </html>
 
-<style>
+<style is:global>
   @font-face {
   font-family: "Spotify";
   src: url("/src/pages/fonts/SpotifyMix-Bold.woff2") format("woff2");
@@ -64,34 +54,49 @@
     font-family: Spotify;
     display: flex;
     justify-content: center;
-    height: 100vh;
     flex-direction: column;
     font-family: "Spotify", monospace;
     align-items: center;
+    overflow-x: hidden;
+    background-color: #c7dac7;
   }
 
-  form {
-    display: flex;
-    flex-direction: column;
-    gap: 1em;
-    width: 100%;
-    align-items: center;
-  }
-
-  .inputrow {
+  .input {
+  height: 100vh;
   display: flex;
-  gap: 8px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  }
+
+h1 {
+  color: rgb(42, 111, 207);
+}
+
+
+ form {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  width: 100%;
+  align-items: center;
+}
+
+.inputrow {
+  display: flex;
+  gap: 10px;
   align-items: flex-end;
-  width: 460px;
+  width: 600px;
 }
 
 textarea {
   flex: 1;
   resize: none;
-  font-size: 14px;
-  padding: 12px 16px;
-  border: 2px solid #2d2c2c;
-  border-radius: 20px;
+  font-size: 18px;
+  padding: 16px 22px;
+  border: 2px solid #837e7e;
+  border-radius: 28px;
   outline: none;
   caret-color: #12943f;
 }
@@ -101,10 +106,10 @@ textarea:focus {
 }
 
 button {
-  width: 44px;
-  height: 44px;
+  width: 54px;
+  height: 54px;
   border-radius: 50%;
-  background: 	#1db954;
+  background: #1db954;
   border: none;
   cursor: pointer;
   display: flex;
@@ -118,44 +123,104 @@ button {
 }
 
 button svg {
-  width: 16px;
-  height: 16px;
+  width: 20px;
+  height: 20px;
   fill: white;
 }
 
-  p {
-    font-size: 1.2rem;
-  }
-
-  .tracks {
-  display: flex;
-  gap: 1rem;
+p {
+  font-size: 1.2rem;
 }
 
-.track-card {
+#result {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  width: 100%;
+  max-width: 600px;
+  padding-bottom: 2em;
+}
+
+.artistContainer {
+  padding: 2em;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  text-decoration: none;
-  color: inherit;
-  width: 140px;
+  justify-content: center;
+  border-radius: 10px;
+  margin-bottom: 2em;
+
+  &:first-of-type {
+  background-color: #2e2d2d;
+  }
+  &:nth-of-type(2) {
+    background-color: #12943f;
+  }
+  &:nth-of-type(3) {
+    background-color: rgb(25, 81, 137);
+  } 
 }
 
-.track-card img {
-  width: 140px;
-  height: 140px;
+
+.artistContainer h2 {
+  font-size: 2rem;
+  margin-bottom: 1em;
+  color: white;
+}
+
+.covers {
+  display: flex;
+  gap: 2rem;
+}
+
+.covers img {
+  width: 150px;
+  height: 150px;
   border-radius: 8px;
+  transition: border-radius 0.2s;
+
+  &:hover {
+    border-radius: 30%;
+  }
 }
 
-.track-card span {
-  font-size: 13px;
+.covers a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  transition: transform 0.2s;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+}
+
+.covers p {
+  font-size: 1.1rem;
   text-align: center;
+  width: 120px;
+  color: white;
 }
 
-.track-card:hover span {
-  color: #1db954;
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.01); }
 }
+
+.artistContainer {
+  animation: pulse 3s ease-in-out infinite;
+}
+
+.artistContainer:nth-of-type(2) {
+  animation-delay: 0.5s;
+}
+
+.artistContainer:nth-of-type(3) {
+  animation-delay: 1s;
+}
+
+
 </style>
 
 <!-- Hulp van Jad -->
@@ -163,13 +228,36 @@ button svg {
     // @ts-nocheck
 const form = document.querySelector("form");
 const textarea = document.querySelector("textarea");
-const aiAnswer = document.querySelector("p");
+const aiAnswer = document.getElementById("result");
 const iconPlay = document.getElementById("iconPlay");
 const iconPause = document.getElementById("iconPause");
 
 function setPlaying(playing) {
   iconPlay.style.display = playing ? "none" : "block";
   iconPause.style.display = playing ? "block" : "none";
+}
+
+function renderResults(results) {
+  const resultsContainer = document.getElementById("result");
+  resultsContainer.innerHTML = "";
+
+  results.forEach(({ artist, tracks }) => {
+    const artistContainer = document.createElement("div");
+    artistContainer.classList.add("artistContainer");
+    artistContainer.innerHTML = `
+      <h2>${artist}</h2>
+      <div class="covers">
+        ${tracks.map(track => `
+        <a href="${track.external_urls.spotify}" target="_blank">
+        <img src="${track.album.images[1].url}" alt="${track.name}" />
+        <p>${track.name}</p>
+        </a>
+`).join("")}
+      </div>
+    `;
+    resultsContainer.appendChild(artistContainer);
+    resultsContainer.scrollIntoView({ behavior: "smooth" });
+  });
 }
 
 form.addEventListener("submit", async (e) => {
@@ -194,11 +282,20 @@ form.addEventListener("submit", async (e) => {
     aiAnswer.innerHTML = result;
     session.destroy();
   } else {
-    setPlaying(false);
-    const response = await fetch(`/api?artist=${userInput}`);
-    const data = await response.json();
-    aiAnswer.innerHTML = data.answer;
-  }
+const response = await fetch(`/api?artist=${userInput}`);  
+const data = await response.json();
+if (data.error) {
+  aiAnswer.textContent = data.error;
+  setPlaying(false);
+  return;
+}
+  renderResults(data.results);
+}
+
+setPlaying(false);
+
+
+
 
 });
 

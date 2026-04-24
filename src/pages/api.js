@@ -3,17 +3,6 @@
 export async function GET({ url }) {
   const userInput = url.searchParams.get("artist");
 
-  if (!userInput) {
-    return new Response(
-      JSON.stringify({
-        error: "Please specify an artist",
-      }),
-      {
-        status: 400,
-      },
-    );
-  }
-
   const groqResponse = await fetch(
     "https://api.groq.com/openai/v1/chat/completions",
     {
@@ -40,6 +29,13 @@ export async function GET({ url }) {
   );
   const groqData = await groqResponse.json();
   const artistSuggestions = groqData.choices[0].message.content;
+  console.log(JSON.stringify(artistSuggestions));
+  if (
+    artistSuggestions ===
+    "Sorry hier kan ik geen artiesten uit halen, probeer wat anders!"
+  ) {
+    return new Response(JSON.stringify({ error: artistSuggestions }));
+  }
   const artistNames = artistSuggestions.split("\n");
   console.log(artistNames);
 
@@ -55,13 +51,16 @@ export async function GET({ url }) {
   const { access_token } = await tokenRes.json();
 
   // Promise.all --> hulp van Jad
+  // https://www.reddit.com/r/learnjavascript/comments/ylcdrt/what_does_the_map_function_actually_do/
+
   const results = await Promise.all(
     artistNames.map(async (artist) => {
       const searchRes = await fetch(
-        `https://api.spotify.com/v1/search?q=${artist}&type=track&limit=3`,
+        `https://api.spotify.com/v1/search?q=${artist}&type=track&limit=3&market=US`,
         { headers: { Authorization: `Bearer ${access_token}` } },
       );
       const searchData = await searchRes.json();
+      console.log(searchData);
       return { artist, tracks: searchData.tracks.items };
       console.log(tracks);
     }),
