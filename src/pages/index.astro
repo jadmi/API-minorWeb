@@ -64,6 +64,11 @@
 
 h1 {
   color: rgb(42, 111, 207);
+  font-size: clamp(1.5rem, 5.5vw, 3rem);
+}
+
+h2 {
+  color: white;
 }
 
 
@@ -79,13 +84,13 @@ h1 {
   display: flex;
   gap: 10px;
   align-items: flex-end;
-  width: 600px;
+  width: clamp(300px, 90vw, 600px);
 }
 
 textarea {
   flex: 1;
   resize: none;
-  font-size: 18px;
+  font-size: clamp(14px, 2vw, 18px);
   padding: 16px 22px;
   border: 2px solid #837e7e;
   border-radius: 28px;
@@ -126,48 +131,50 @@ p {
 
 #result {
   display: flex;
-  flex-direction: column;
-  gap: 2rem;
-  width: 100%;
-  max-width: 600px;
+  flex-direction: row;
+  gap: 1.5rem;
+  max-width: 95vw;
   padding-bottom: 2em;
-}
+
+  @media (max-width: 1024px) {
+    flex-direction: column;
+    align-items: center;
+    max-width: 85vw;
+  }
+} 
 
 .artistContainer {
+  min-width: 0;
   padding: 2em;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   border-radius: 10px;
-  margin-bottom: 2em;
 
   &:first-of-type {
-  background-color: #2e2d2d;
+    background-color: #2e2d2d;
   }
   &:nth-of-type(2) {
     background-color: #12943f;
   }
   &:nth-of-type(3) {
     background-color: rgb(25, 81, 137);
-  } 
-}
-
-
-.artistContainer h2 {
-  font-size: 2rem;
-  margin-bottom: 1em;
-  color: white;
+  }
 }
 
 .covers {
   display: flex;
-  gap: 2rem;
+  flex-direction: row;
+  gap: 1rem;
+  width: 100%;
 }
 
 .covers img {
-  width: 150px;
-  height: 150px;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  object-fit: cover;
   border-radius: 8px;
   transition: border-radius 0.2s;
 
@@ -177,6 +184,8 @@ p {
 }
 
 .covers a {
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -184,24 +193,16 @@ p {
   transition: transform 0.2s;
 
   &:hover {
-    transform: scale(1.1);
+    transform: scale(1.05);
   }
 }
 
 .covers p {
-  font-size: 1.1rem;
+  font-size: 0.9rem;
   text-align: center;
-  width: 120px;
+  width: 100%;
   color: white;
-}
-
-@keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.01); }
-}
-
-.artistContainer {
-  animation: pulse 3s ease-in-out infinite;
+  margin-top: 4px;
 }
 
 .artistContainer:nth-of-type(2) {
@@ -224,6 +225,13 @@ const aiAnswer = document.getElementById("result");
 const iconPlay = document.getElementById("iconPlay");
 const iconPause = document.getElementById("iconPause");
 
+document.addEventListener("DOMContentLoaded", () => {
+  const saved = localStorage.getItem("results");
+  if (saved) {
+    renderResults(JSON.parse(saved));
+  }
+});
+
 function setPlaying(playing) {
   iconPlay.style.display = playing ? "none" : "block";
   iconPause.style.display = playing ? "block" : "none";
@@ -237,17 +245,17 @@ function renderResults(results) {
   results.forEach(({ artist, tracks }) => {
     const artistContainer = document.createElement("div");
     artistContainer.classList.add("artistContainer");
-    artistContainer.innerHTML = `
-      <h2>${artist}</h2>
-      <div class="covers">
-        ${tracks.map(track => `
-        <a href="${track.external_urls.spotify}" target="_blank">
-        <img src="${track.album.images[1].url}" alt="${track.name}" />
-        <p>${track.name}</p>
-        </a>
+artistContainer.innerHTML = `
+  <a href="/artist/${artist}" class="artist-link"><h2>${artist}</h2></a>
+  <div class="covers">
+    ${tracks.map(track => `
+    <a href="${track.external_urls.spotify}" target="_blank">
+    <img src="${track.album.images[1].url}" alt="${track.name}" />
+    <p>${track.name}</p>
+    </a>
 `).join("")}
-      </div>
-    `;
+  </div>
+`;
     resultsContainer.appendChild(artistContainer);
     resultsContainer.scrollIntoView({ behavior: "smooth" });
   });
@@ -288,6 +296,7 @@ if (data.error) {
   return;
 }
   renderResults(data.results);
+  localStorage.setItem("results", JSON.stringify(data.results));
 }
 
 setPlaying(false);

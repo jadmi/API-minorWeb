@@ -1,0 +1,194 @@
+---
+const { name } = Astro.params;
+
+const tokenRes = await fetch("https://accounts.spotify.com/api/token", {
+  method: "POST",
+  headers: { "Content-Type": "application/x-www-form-urlencoded" },
+  body: new URLSearchParams({
+    grant_type: "client_credentials",
+    client_id: import.meta.env.SPOTIFY_CLIENT_ID,
+    client_secret: import.meta.env.SPOTIFY_CLIENT_SECRET,
+  })
+});
+const { access_token } = await tokenRes.json();
+
+const searchRes = await fetch(
+  `https://api.spotify.com/v1/search?q=${name}&type=artist&limit=1&market=US`,
+  { headers: { Authorization: `Bearer ${access_token}` } }
+);
+const searchData = await searchRes.json();
+const artistId = searchData.artists.items[0].id;
+
+const artistRes = await fetch(
+  `https://api.spotify.com/v1/artists/${artistId}`,
+  { headers: { Authorization: `Bearer ${access_token}` } }
+);
+const artist = await artistRes.json();
+
+const tracksRes = await fetch(
+  `https://api.spotify.com/v1/search?q=${name}&type=track&limit=5&market=US`,
+  { headers: { Authorization: `Bearer ${access_token}` } }
+);
+const tracksData = await tracksRes.json();
+const tracks = tracksData.tracks.items;
+
+const albumsRes = await fetch(
+  `https://api.spotify.com/v1/artists/${artistId}/albums?limit=3&market=US`,
+  { headers: { Authorization: `Bearer ${access_token}` } }
+);
+const albumsData = await albumsRes.json();
+const albums = albumsData.items;
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>{artist.name}</title>
+  </head>
+  <body>
+    <a class="terug" href="/">← Terug</a>
+
+    <div class="hero">
+      <img src={artist.images[0].url} alt={artist.name} />
+      <div class="info">
+        <h1>{artist.name}</h1>
+        <a class="spotify-link" href={artist.external_urls.spotify} target="_blank">
+          Ontdek op Spotify
+        </a>
+      </div>
+    </div>
+
+    <h3 class="sectie-titel">Top nummers</h3>
+    <div class="tracks">
+      {tracks.map(track => (
+        <a class="track" href={track.external_urls.spotify} target="_blank">
+          <img src={track.album.images[1].url} alt={track.name} />
+          <p>{track.name}</p>
+        </a>
+      ))}
+    </div>
+
+    <h3 class="sectie-titel">Nieuwste albums</h3>
+    <div class="tracks">
+      {albums.map(album => (
+        <a class="track" href={album.external_urls.spotify} target="_blank">
+          <img src={album.images[1].url} alt={album.name} />
+          <p>{album.name}</p>
+        </a>
+      ))}
+    </div>
+  </body>
+</html>
+
+<style>
+body {
+  background-color: #3e6a9f !important;
+  font-family: monospace;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hero {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  padding: 2rem 3rem;
+  width: 100%;
+  max-width: 900px;
+}
+
+.terug {
+  color: rgb(255, 255, 255);
+  display: inline-block;
+  padding: 1rem 2rem;
+  text-decoration: none;
+  font-size: 1.2rem;
+}
+
+.terug:hover {
+  text-decoration: underline;
+}
+
+.hero img {
+  width: 250px;
+  height: 250px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+h1 {
+  color: white;
+  font-size: 3rem;
+  margin: 0;
+}
+
+.sectie-titel {
+  color: white;
+  font-size: 1.8rem;
+  padding: 0.5em 0em
+}
+
+.spotify-link {
+  display: inline-block;
+  padding: 8px 20px;
+  background: #1db954;
+  color: white;
+  text-decoration: none;
+  border-radius: 20px;
+  font-size: 1rem;
+  width: fit-content;
+}
+
+.spotify-link:hover {
+  background: #1ed760;
+}
+
+.tracks {
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+  justify-content: center;
+  padding: 1rem 3rem;
+  flex-wrap: wrap;
+  width: 100%;
+  max-width: 900px;
+}
+
+.track {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.2s;
+}
+
+.track:hover {
+  transform: scale(1.1);
+}
+
+.track img {
+  width: 150px;
+  height: 150px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.track p {
+  color: white;
+  font-size: 1rem;
+  text-align: center;
+  width: 150px;
+}
+</style>
