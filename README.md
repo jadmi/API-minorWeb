@@ -78,6 +78,7 @@ Tot slot ben ik visueel bezig geweest om het een geheel te maken o.a. met een lo
 Jad - technisch gedeelte api.js/ajax
 Braham
 
+
 ### Spotify API
 https://developer.spotify.com/documentation/web-api/tutorials/getting-started
 
@@ -88,6 +89,8 @@ https://developer.spotify.com/documentation/web-api/reference/get-an-artist
 https://developer.spotify.com/documentation/web-api/reference/get-an-artists-albums
 
 ### Andere
+
+Claude: specifiek stukje in code, algemene slordigheid etc. checks.
 
 https://curlconverter.com/javascript/
 
