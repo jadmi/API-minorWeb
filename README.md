@@ -55,23 +55,54 @@ Bezig geweest met de techniek --> api calls en begin aan visueel gemaakt
 
 
 # Proces
-## Opzet idee
+## Opzet idee + begin
 Het leek mij interessant om met de Spotify api te werken, vervolgens ben ik gaan brainstormen met een relevant onderwerp hiervoor. Ik wilde een applicatie maken waarvan ik zelf ook gebruik zou maken als ik het ergens tegenkwam. Zo ben ik uitgekomen op het idee van SpotiMatch, waarbij je een artiest of vibe kan invullen die je leuk vind en gebaseerd daarop krijg je drie bijpassende artiesten waar je de muziek van kan ontdekken. Zo heb ik zelf wat nummers toegevoegd van een aangeraden rap artiest die gegenereerd werd door de applicatie.
 
+Vervolgens heb ik een begin gemaakt met de Spotify API en het laten werken in de basis:
+<img width="1127" height="641" alt="image" src="https://github.com/user-attachments/assets/a101acd8-aa76-41fb-9dc3-5ae86be8b351" />
+Ik moest gelijk wat aanpassingen maken omdat de top tracks endpoint deprecated is, als vervanger gebruik ik de spotify search endpoint om de top tracks van elke artiest op te halen. 
+
 ## Eerste stap - webAI
-Als eerste stap ben ik aan de slag gegaan met web AI om te kijken of ik het hiermee kon laten werken en dat als informatiebron te gebruiken voor de artiesten, het was meer moeite dan ik dacht maar gelukt om op te zetten op mijn laptop. Gedurende dit proces kreeg ik wel te horen van Jad dat je dan mijn applicatie alleen kan gebruiken als je zelf ook web AI heb draaien, omdat het lokaal is. 
+Als eerste stap ben ik aan de slag gegaan met web AI om te kijken of ik het hiermee kon laten werken en dat als informatiebron te gebruiken voor de artiesten, het was meer moeite dan ik dacht maar gelukt om op te zetten op mijn laptop. je vult een artiest in en webAI geeft soortgelijke artiesten gebaseerd op de ingevoerde artiest.
+Gedurende dit proces kreeg ik wel te horen van Jad dat je dan mijn applicatie alleen kan gebruiken als je zelf ook web AI heb draaien, omdat het lokaal is. 
+<img width="750" height="202" alt="Screenshot 2026-05-07 at 18 17 33" src="https://github.com/user-attachments/assets/5efe0d78-4fab-4d9d-931e-c2eed344c9d0" />
+
+<img width="329" height="104" alt="image" src="https://github.com/user-attachments/assets/39062723-3cec-4669-a903-bea79c2b7354" />
+
+<img width="843" height="360" alt="image" src="https://github.com/user-attachments/assets/f989c6cd-a428-4ddc-8b16-35fe214e4bbc" />
 
 ## Tweede stap - fallback regelen
-Ik wilde dat anderen het ook zouden kunnen gebruiken dus ben ik bezig geweest om een "fallback" te maken. Ik heb gezocht naar een gratis LLM AI en kwam uit bij Groq, ik heb hun documentatie bekeken en het zo laten werken met een if else dat als je geen web ai hebt draaien dat de call naar groq wordt gemaakt en je dus alsnog gebruik kan maken van de applicatie. 
+Ik wilde dat anderen mijn applicatie ook zouden kunnen gebruiken dus ben ik bezig geweest om een "fallback" te maken. Ik heb gezocht naar een gratis LLM AI en kwam uit bij Groq, ik heb hun documentatie bekeken en het zo laten werken met een if else dat als je geen web ai hebt draaien dat de call naar groq wordt gemaakt en je dus alsnog gebruik kan maken van de applicatie. 
+
+<img width="1022" height="290" alt="image" src="https://github.com/user-attachments/assets/25571f7a-4113-42f6-b713-0c46b525f3ca" />
 
 ## Derde stap - AJAX + Spotify API
 Na het combineren van web ai en groq liep ik tegen twee dingen aan; de pagina moest elke keer herladen en de api keys kon je gewoon terug vinden in de code. Met deze twee problemen ging ik naar Jad en hij kwam met een API route, waarbij je de calls naar api.js die op de server staat en die stuurt json terug, geen nieuwe pagina. Vervolgens pak je de JSON, stuur je die naar de spotify api, die stuurt antwoorden terug, en vervolgens update je daarmee de DOM om de resultaten erin te zetten.
 
+<img width="742" height="79" alt="image" src="https://github.com/user-attachments/assets/66c5de18-1a85-4ebb-90d6-774cd7860161" />
+
+<img width="515" height="134" alt="image" src="https://github.com/user-attachments/assets/25f7e011-7eac-41cf-8934-300de9d5e47a" />
+
+
+Tot slot heb ik de eerste pagina visueel gemaakt, input en resultaten.
+
+https://github.com/user-attachments/assets/179abccf-1135-4f0f-93c0-40af8eb138b5
+
 ## Vierde stap - detailpagina
-Ik had nog niet gedacht aan een detailpagina dus ben ik vervolgens daarmee aan de slag gegaan. Op de detailpagina krijg je dynamisch per artiest de top nummers en top albums te zien. Deze nummers komen deels overeen met de nummers die je op het beginscherm te zien krijgt. Hiermee krijg je genoeg mogelijkheden om nieuwe muziek te ontdekken. Elk nummer linkt dan ook naar Spotify aangezien ik mijn applicatie wil zonder dat je hoeft in te loggen bij Spotify. Ook hier heb ik gaandeweg aanpassingen gemaakt op basis van de Spotify api waarbij veel dingen deprecated zijn dus moest ik vervangende manieren vinden.
+Ik had nog niet gedacht aan een detailpagina dus ben ik vervolgens daarmee aan de slag gegaan. Op de detailpagina krijg je dynamisch per artiest de top nummers en top albums te zien. Deze nummers komen deels overeen met de nummers die je op het beginscherm te zien krijgt. Hiermee krijg je genoeg mogelijkheden om nieuwe muziek te ontdekken. Elk nummer linkt dan ook naar Spotify aangezien ik mijn applicatie wil zonder dat je hoeft in te loggen bij Spotify. Ook hier heb ik gaandeweg aanpassingen gemaakt op basis van de Spotify api waarbij veel dingen deprecated zijn (artiest followers, popularity) dus moest ik vervangende manieren vinden.
+
+<img width="641" height="721" alt="image" src="https://github.com/user-attachments/assets/947d1613-744c-417b-af37-2559ce541b04" />
+
 
 ## Afronding
-Tot slot ben ik visueel bezig geweest om het een geheel te maken o.a. met een logo, favicon en microanimaties. Daarbij een logischer verhaal met een duidelijkere uitleg op het beginscherm zodat je weet wat je te wachten staat bij het gebruik van mijn applicatie: nieuwe muziek ontdekken. Al met al was het technisch best uitgebreid en heb ik het wel mezelf moeilijker gemaakt. 
+Tot slot ben ik visueel bezig geweest om het een geheel te maken o.a. met een logo, favicon en microanimaties. Daarbij een logischer verhaal met een duidelijkere uitleg op het beginscherm zodat je weet wat je te wachten staat bij het gebruik van mijn applicatie: nieuwe muziek ontdekken. Tot slot de detailpagina ook verbeterd met de populaire albums i.p.v. de nieuwste, iframes per nummer omdat de player niet kan zonder in te loggen en de algemene layout.
+
+
+
+https://github.com/user-attachments/assets/6424a1a1-96db-450b-ae2c-4c8d3145f72a
+
+
+
 
 ## Bronnen
 
