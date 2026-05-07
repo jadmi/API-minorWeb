@@ -25,9 +25,11 @@
 </div>
 </form>
 </div>
+<section class="results-section">
+
 <div id="result"></div>
 
-
+</section>
 
 	</body>
 
@@ -60,6 +62,7 @@
   justify-content: center;
   align-items: center;
   gap: 1rem;
+  margin-bottom: 25vh;
   }
 
 h1 {
@@ -68,8 +71,10 @@ h1 {
 }
 
 h2 {
+  font-size: 2rem;
   color: white;
 }
+
 
 
  form {
@@ -129,12 +134,22 @@ p {
   font-size: 1.2rem;
 }
 
+.results-section {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
 #result {
   display: flex;
   flex-direction: row;
   gap: 1.5rem;
   max-width: 95vw;
   padding-bottom: 2em;
+  justify-content: center;
+
 
   @media (max-width: 1024px) {
     flex-direction: column;
@@ -145,7 +160,7 @@ p {
 
 .artistContainer {
   min-width: 0;
-  padding: 2em;
+  padding: 1em;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -237,6 +252,14 @@ function setPlaying(playing) {
   iconPause.style.display = playing ? "block" : "none";
 }
 
+// Hulp van Braham
+textarea.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    form.dispatchEvent(new Event("submit"));
+  }
+});
+
 function renderResults(results) {
   const resultsContainer = document.getElementById("result");
   resultsContainer.innerHTML = "";
@@ -246,7 +269,7 @@ function renderResults(results) {
     const artistContainer = document.createElement("div");
     artistContainer.classList.add("artistContainer");
 artistContainer.innerHTML = `
-  <a href="/artist/${artist}" class="artist-link"><h2>${artist}</h2></a>
+  <h2>${artist}</h2>
   <div class="covers">
     ${tracks.map(track => `
     <a href="${track.external_urls.spotify}" target="_blank">
@@ -256,8 +279,20 @@ artistContainer.innerHTML = `
 `).join("")}
   </div>
 `;
-    resultsContainer.appendChild(artistContainer);
-    resultsContainer.scrollIntoView({ behavior: "smooth" });
+   resultsContainer.appendChild(artistContainer);
+
+artistContainer.style.cursor = "pointer";
+artistContainer.addEventListener("click", () => {
+  window.location.href = `/artist/${artist}`;
+});
+
+// https://developer.mozilla.org/en-US/docs/Web/API/Event/stopPropagation
+artistContainer.querySelectorAll(".covers a").forEach(link => {
+  link.addEventListener("click", (e) => {
+    e.stopPropagation();
+  });
+});
+  resultsContainer.scrollIntoView({ behavior: "smooth", block: "center" });
   });
 }
 
@@ -273,17 +308,27 @@ form.addEventListener("submit", async (e) => {
   setPlaying(true);
   aiAnswer.textContent = "Even zoeken...";
 
-  // WebAI call, hulp van Jad
+  // WebAI call, hulp van Jad 
   if ('LanguageModel' in self) {
     const session = await LanguageModel.create({
       initialPrompts: [{
         role: "system",
-        content: "Je geeft drie muziek artiesten terug gebaseerd op wat de gebruiker als input geeft, alleen de artiesten namen en niks anders. Als de gebruiker een muziekartiest op geeft geef dan drie artiesten die vergelijkbare muziek hebben. Gebruik geen markdown of andere opmaak in je berichten. Als je niks uit de user input kan halen en/of de opgegeven input is een naam maar geen spotify artiest zeg dan aan: Sorry hier kan ik geen artiesten uit halen, probeer wat anders!"
+        content: "Je geeft drie muziek artiesten terug gebaseerd op wat de gebruiker als input geeft, alleen de artiesten namen en niks anders. Als de gebruiker een muziekartiest op geeft geef dan drie artiesten die vergelijkbare muziek hebben.  Geef exact drie artiesten terug, elke artiest gescheiden door een komma. Gebruik geen markdown of andere opmaak in je berichten. Geen markdown, geen nummering, geen extra tekst. Geen lege regels. Als je niks uit de user input kan halen en/of de opgegeven input is een naam maar geen spotify artiest zeg dan aan: Sorry hier kan ik geen artiesten uit halen, probeer wat anders!"
       }]
     });
     const result = await session.prompt(userInput);
-    aiAnswer.innerHTML = result;
+    console.log(result);
     session.destroy();
+
+const response = await fetch(`/api?artist=${result}&skip_groq=true`);  const data = await response.json();
+  if (data.error) {
+    aiAnswer.textContent = data.error;
+    setPlaying(false);
+    return;
+  }
+  renderResults(data.results, true);
+  localStorage.setItem("results", JSON.stringify(data.results));
+
   } else {
 
 const response = await fetch(`/api?artist=${userInput}`);  

@@ -2,44 +2,53 @@
 
 export async function GET({ url }) {
   const userInput = url.searchParams.get("artist");
+  const skipGroq = url.searchParams.get("skip_groq");
 
-  // Call naar de LLM maken, die geeft 3 artiesten terug en die geef ik weer door aan spotify.
-  const groqResponse = await fetch(
-    "https://api.groq.com/openai/v1/chat/completions",
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${import.meta.env.PRIVATE_GROQ_KEY}`,
-        "Content-Type": "application/json",
+  // Hierbij een klein stukje Claude (skipgroq) om het zo te laten werken dat de WebAI antwoorden ook doorgegeven worden aan Spotify omdat deze lokaal draait en niet op de server.
+  let artistNames;
+
+  if (skipGroq) {
+    console.log("skip_groq input:", userInput);
+    artistNames = userInput.split(",");
+  } else {
+    // Call naar de LLM maken, die geeft 3 artiesten terug en die geef ik weer door aan spotify.
+    const groqResponse = await fetch(
+      "https://api.groq.com/openai/v1/chat/completions",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${import.meta.env.PRIVATE_GROQ_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "llama-3.3-70b-versatile",
+          messages: [
+            {
+              role: "system",
+              content:
+                "Je geeft drie muziek artiesten terug gebaseerd op wat de gebruiker als input geeft, alleen de artiesten namen en niks anders. Als de gebruiker een muziekartiest op geeft geef dan drie artiesten die vergelijkbare muziek hebben. Gebruik geen markdown of andere opmaak in je berichten. elke artiest op een nieuwe regel. Geen markdown, geen nummering, geen extra tekst. Geen lege regels. Als je niks uit de user input kan halen en/of de opgegeven input is een naam maar geen spotify artiest zeg dan aan: Sorry hier kan ik geen artiesten uit halen, probeer wat anders!",
+            },
+            {
+              role: "user",
+              content: userInput,
+            },
+          ],
+        }),
       },
-      body: JSON.stringify({
-        model: "llama-3.3-70b-versatile",
-        messages: [
-          {
-            role: "system",
-            content:
-              "Je geeft drie muziek artiesten terug gebaseerd op wat de gebruiker als input geeft, alleen de artiesten namen en niks anders. Als de gebruiker een muziekartiest op geeft geef dan drie artiesten die vergelijkbare muziek hebben. Gebruik geen markdown of andere opmaak in je berichten. elke artiest op een nieuwe regel. Geen markdown, geen nummering, geen extra tekst. Geen lege regels. Als je niks uit de user input kan halen en/of de opgegeven input is een naam maar geen spotify artiest zeg dan aan: Sorry hier kan ik geen artiesten uit halen, probeer wat anders!",
-          },
-          {
-            role: "user",
-            content: userInput,
-          },
-        ],
-      }),
-    },
-  );
-  const groqData = await groqResponse.json();
-  // Data uit groq response ophalen
-  const artistSuggestions = groqData.choices[0].message.content;
-  console.log(JSON.stringify(artistSuggestions));
-  if (
-    artistSuggestions ===
-    "Sorry hier kan ik geen artiesten uit halen, probeer wat anders!"
-  ) {
-    return new Response(JSON.stringify({ error: artistSuggestions }));
+    );
+    const groqData = await groqResponse.json();
+    // Data uit groq response ophalen
+    const artistSuggestions = groqData.choices[0].message.content;
+    console.log(JSON.stringify(artistSuggestions));
+    if (
+      artistSuggestions ===
+      "Sorry hier kan ik geen artiesten uit halen, probeer wat anders!"
+    ) {
+      return new Response(JSON.stringify({ error: artistSuggestions }));
+    }
+    artistNames = artistSuggestions.split("\n");
+    console.log(artistNames);
   }
-  const artistNames = artistSuggestions.split("\n");
-  console.log(artistNames);
 
   // Spotify token opvragen
   const tokenRes = await fetch("https://accounts.spotify.com/api/token", {
