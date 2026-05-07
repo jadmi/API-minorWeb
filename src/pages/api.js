@@ -10,6 +10,9 @@ export async function GET({ url }) {
   if (skipGroq) {
     console.log("skip_groq input:", userInput);
     artistNames = userInput.split(",");
+    if (artistNames[0].startsWith("Sorry")) {
+      return new Response(JSON.stringify({ error: artistNames[0] }));
+    }
   } else {
     // Call naar de LLM maken, die geeft 3 artiesten terug en die geef ik weer door aan spotify.
     const groqResponse = await fetch(
@@ -68,7 +71,7 @@ export async function GET({ url }) {
   const results = await Promise.all(
     artistNames.map(async (artist) => {
       const searchRes = await fetch(
-        `https://api.spotify.com/v1/search?q=${artist}&type=track&limit=3&market=US`,
+        `https://api.spotify.com/v1/search?q=${artist}&type=track&limit=3`,
         { headers: { Authorization: `Bearer ${access_token}` } },
       );
       const searchData = await searchRes.json();

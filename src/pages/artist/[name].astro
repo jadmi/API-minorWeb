@@ -1,7 +1,8 @@
 ---
-import type { GetStaticPaths } from "astro";
+// Artiest naam uit de url halen
 const { name } = Astro.params;
 
+// Spotify token om met API te werken
 const tokenRes = await fetch("https://accounts.spotify.com/api/token", {
   method: "POST",
   headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -13,32 +14,36 @@ const tokenRes = await fetch("https://accounts.spotify.com/api/token", {
 });
 const { access_token } = await tokenRes.json();
 
+// Artiest zoeken voor de spotify ID
 const searchRes = await fetch(
-  `https://api.spotify.com/v1/search?q=${name}&type=artist&limit=1&market=US`,
+  `https://api.spotify.com/v1/search?q=${name}&type=artist&limit=1`,
   { headers: { Authorization: `Bearer ${access_token}` } }
 );
 const searchData = await searchRes.json();
 const artistId = searchData.artists.items[0].id;
 
+// Met de ID de artiest info ophalen, naam en foto
 const artistRes = await fetch(
   `https://api.spotify.com/v1/artists/${artistId}`,
   { headers: { Authorization: `Bearer ${access_token}` } }
 );
 const artist = await artistRes.json();
 
+// Top 5 tracks zoeken van de artiest
 const tracksRes = await fetch(
-  `https://api.spotify.com/v1/search?q=${name}&type=track&limit=5&market=US`,
+  `https://api.spotify.com/v1/search?q=${name}&type=track&limit=5`,
   { headers: { Authorization: `Bearer ${access_token}` } }
 );
 const tracksData = await tracksRes.json();
 const tracks = tracksData.tracks.items;
-
-const albumsRes = await fetch(
-  `https://api.spotify.com/v1/artists/${artistId}/albums?limit=3&market=US`,
-  { headers: { Authorization: `Bearer ${access_token}` } }
-);
-const albumsData = await albumsRes.json();
-const albums = albumsData.items;
+const albums = [];
+// Albums uit de tracks halen, if voor geen dubbele albums
+// https://javascript.info/array-methods
+for (const track of tracks.slice(0, 4)) {
+  if (!albums.find(currentAlbum => currentAlbum.id === track.album.id)) {
+    albums.push(track.album);
+  }
+}
 ---
 
 <html lang="en">
@@ -48,60 +53,72 @@ const albums = albumsData.items;
     <title>{artist.name}</title>
   </head>
   <body>
-    <a class="terug" href="/">← Terug</a>
+    <a class="backButton" href="/">← Terug</a>
 
     <div class="hero">
       <img src={artist.images[0].url} alt={artist.name} />
       <div class="info">
         <h1>{artist.name}</h1>
-        <a class="spotify-link" href={artist.external_urls.spotify} target="_blank">
+        <a class="spotifyLink" href={artist.external_urls.spotify} target="_blank">
           Ontdek op Spotify
         </a>
       </div>
     </div>
 
-    <h3 class="sectie-titel">Top nummers</h3>
+    <h3 class="sectieTitel">Top nummers</h3>
 <div class="tracks">
   {tracks.map(track => (
-    <div class="track-wrap">
+    <div class="trackWrapper">
       <a class="track" href={track.external_urls.spotify} target="_blank">
         <img src={track.album.images[1].url} alt={track.name} />
         <p>{track.name}</p>
       </a>
       <iframe 
         src={`https://open.spotify.com/embed/track/${track.id}`}
-        width="100%" 
-        height="80" 
-        frameborder="0" 
         allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture">
       </iframe>
     </div>
   ))}
 </div>
 
-<section class="albums-section">
-    <h3 class="sectie-titel">Nieuwste albums</h3>
+<section class="albumsSection">
+    <h3 class="sectieTitel">Top albums</h3>
     <div class="albums">
       {albums.map(album => (
-        <a class="track" href={album.external_urls.spotify} target="_blank">
+        <a class="album" href={album.external_urls.spotify} target="_blank">
           <img src={album.images[1].url} alt={album.name} />
           <p>{album.name}</p>
         </a>
       ))}
     </div>
     </section>
+        <a class="backButton" href="/">← Terug</a>
   </body>
 </html>
 
 <style>
+
+@font-face {
+  font-family: "SpotifyRegular";
+  src: url("../fonts/SpotifyMix-Regular.woff2") format("woff2");
+}
+
 body {
-  background-color: #3e6a9f !important;
+  background-color: #3e6a9f;
+  background-image: radial-gradient(circle, rgba(0,0,0,0.08) 2px, transparent 1px);
+  background-size: 24px 24px;
   font-family: monospace;
   padding: 0;
   margin: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+h1 {
+  color: white;
+  font-size: 3rem;
+  margin: 0;
 }
 
 .hero {
@@ -113,23 +130,24 @@ body {
   max-width: 900px;
 }
 
-.terug {
-  color: rgb(255, 255, 255);
-  display: inline-block;
-  padding: 1rem 2rem;
-  text-decoration: none;
-  font-size: 1.2rem;
-}
-
-.terug:hover {
-  text-decoration: underline;
-}
-
 .hero img {
   width: 250px;
   height: 250px;
   border-radius: 50%;
   object-fit: cover;
+}
+
+
+.backButton {
+  color: rgb(255, 255, 255);
+  display: inline-block;
+  padding: 1rem 2rem;
+  text-decoration: none;
+  font-size: 1.2rem;
+
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
 .info {
@@ -138,19 +156,14 @@ body {
   gap: 1rem;
 }
 
-h1 {
+.sectieTitel {
   color: white;
-  font-size: 3rem;
-  margin: 0;
+  font-size: 2.3rem;
+  padding: 0.5em 0em;
+  text-align: center;
 }
 
-.sectie-titel {
-  color: white;
-  font-size: 2rem;
-  padding: 0.5em 0em
-}
-
-.spotify-link {
+.spotifyLink {
   display: inline-block;
   padding: 8px 20px;
   background: #1db954;
@@ -159,10 +172,13 @@ h1 {
   border-radius: 20px;
   font-size: 1rem;
   width: fit-content;
-}
+  transition: transform 0.2s, background 0.2s;
 
-.spotify-link:hover {
+  &:hover {
+      transform: translateY(-4px);
   background: #313332;
+  }
+
 }
 
 .tracks , .albums{
@@ -172,17 +188,10 @@ h1 {
   flex-wrap: wrap;
   width: 100%;
   max-width: 80vw;
-}
-
-.albums {
   gap: 4rem;
 }
 
-.tracks {
-  gap: 4rem;
-}
-
-.track {
+.track, .album {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -197,8 +206,14 @@ h1 {
   transform: scale(1.1);
 }
 
-.track-wrap {
+.trackWrapper {
   margin: 1rem;
+}
+
+iframe {
+  width: 100%;
+  height: 80px; 
+  border: none;
 }
 
 
@@ -215,22 +230,36 @@ h1 {
   object-fit: cover;
   animation: spin 5s linear infinite;
   animation-play-state: paused;
+
+  &:hover {
+    animation-play-state: running;
+  }
 }
 
-.track:hover img {
-  animation-play-state: running;
-}
 
-.track p {
+.track p, .album p {
   color: white;
-  font-size: 1rem;
+  font-family: "SpotifyRegular";
+  font-size: 1.1rem;
   text-align: center;
   width: 150px;
 }
 
-.albums-section {
+.albumsSection {
   margin: 3em;
   text-align: center;
 }
 
+.album img {
+  width: 180px;
+  height: 180px;
+  border-radius: 6px;
+  border: 2px solid rgba(255, 224, 224, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
+  transform: translateY(-6px) scale(1.03);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+  }
+}
 </style>

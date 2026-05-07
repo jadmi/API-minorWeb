@@ -7,55 +7,67 @@
 	<head>
 		<meta charset="utf-8" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
-		<title>SpotifyMatch</title>
+		<title>SpotiMatch</title>
 	</head>
 	<body>
-<div class="input">
-<h1>Kies een artiest of vibe!</h1>
+    <div class="input">
+  <div class="logo">
+    <h1>SpotiMatch</h1>
+    <img src="/favicon.svg" alt="SpotiMatch logo" />
+  </div>
+  <h2 class="subtitel">Voer jouw favoriete artiest of vibe in en ontdek nieuwe muziek!</h2>
 <form action="submit">
 <div class="inputrow">
-  <textarea id="userPrompt" placeholder="Kendrick Lamar... Late night car drive..." rows="1"></textarea>
+  <textarea id="userPrompt" placeholder="Kendrick Lamar... Chill Vibe..." rows="1"></textarea>
   <button type="submit">
     <svg id="iconPlay" viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
     <svg id="iconPause" viewBox="0 0 24 24" style="display:none"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
   </button>
 </div>
 </form>
+<p id="errorMsg"></p>
 </div>
-<section class="results-section">
 
+<section class="resultsSection">
+<h2 class="artists">Klik en ontdek deze artiesten!</h2>
 <div id="result"></div>
-
 </section>
-
 	</body>
 
 </html>
 
 <style is:global>
   @font-face {
-  font-family: "Spotify";
+  font-family: "SpotifyHeaders";
   src: url("/src/pages/fonts/SpotifyMix-Bold.woff2") format("woff2");
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
 }
 
-  body {
-    font-family: Spotify;
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    font-family: "Spotify", monospace;
-    align-items: center;
-    overflow-x: hidden;
-    background-color: #c7dac7;
+@font-face {
+  font-family: "SpotifyRegular";
+  src: url("/src/pages/fonts/SpotifyMix-Regular.woff2") format("woff2");
+}
+
+:root {
+  --headerColor: rgb(17 85 182);
+  --bodyColor: white;
+  --spotifyGreen: #1db954;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  font-family: "SpotifyHeaders", monospace;
+  align-items: center;
+  overflow-x: hidden;
+  background-color: hsl(119 20.4% 78.9%);
+  background-image: radial-gradient(circle, rgba(0,0,0,0.08) 1px, transparent 1px);
+  background-size: 24px 24px;
   }
 
-  .input {
+.input {
   height: 100vh;
   display: flex;
   flex-direction: column;
@@ -66,18 +78,35 @@
   }
 
 h1 {
-  color: rgb(42, 111, 207);
+  color: var(--headerColor);
   font-size: clamp(1.5rem, 5.5vw, 3rem);
 }
 
 h2 {
-  font-size: 2rem;
-  color: white;
+  font-size: 1.8rem;
+  color: var(--bodyColor);
 }
 
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: -2em;
+}
 
+.logo img {
+  width: 38px;
+  height: 38px;
+}
 
- form {
+.subtitel {
+  font-size: 1.6rem;
+  color: var(--headerColor);
+  text-align: center;
+  max-width: 600px;
+}
+
+form {
   display: flex;
   flex-direction: column;
   gap: 1em;
@@ -101,17 +130,20 @@ textarea {
   border-radius: 28px;
   outline: none;
   caret-color: #12943f;
+  background: rgba(255,255,255,0.7);
+  transition: background 0.2s, border-color 0.2s;
 }
 
 textarea:focus {
-  border-color: #1db954;
+  border-color: var(--spotifyGreen);
+  background: white;
 }
 
 button {
   width: 54px;
   height: 54px;
   border-radius: 50%;
-  background: #1db954;
+  background: var(--spotifyGreen);
   border: none;
   cursor: pointer;
   display: flex;
@@ -120,7 +152,8 @@ button {
 
   &:hover {
     transform: scale(1.03);
-    transition: ease-in-out;
+    transition: transform 0.2s ease-in-out;
+    
   }
 }
 
@@ -131,15 +164,30 @@ button svg {
 }
 
 p {
+  font-family: "SpotifyRegular", monospace;
   font-size: 1.2rem;
 }
 
-.results-section {
+#errorMsg {
+  display: none;
+  font-family: "SpotifyHeaders", monospace;
+  font-size: 1.2rem;
+  color: rgb(211, 34, 34);
+}
+
+.artists {
+  display: none;
+  font-size: 2.5rem;
+  color: var(--headerColor);
+}
+
+.resultsSection {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
+  flex-direction: column;
 }
 
 #result {
@@ -166,6 +214,12 @@ p {
   align-items: center;
   justify-content: center;
   border-radius: 10px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: scale(1.02);
+  }
 
   &:first-of-type {
     background-color: #2e2d2d;
@@ -213,21 +267,12 @@ p {
 }
 
 .covers p {
-  font-size: 0.9rem;
+  font-size: 1rem;
   text-align: center;
   width: 100%;
-  color: white;
-  margin-top: 4px;
+  color: var(--bodyColor);  
+  margin-top: 1em;
 }
-
-.artistContainer:nth-of-type(2) {
-  animation-delay: 0.5s;
-}
-
-.artistContainer:nth-of-type(3) {
-  animation-delay: 1s;
-}
-
 
 </style>
 
@@ -239,7 +284,10 @@ const textarea = document.querySelector("textarea");
 const aiAnswer = document.getElementById("result");
 const iconPlay = document.getElementById("iconPlay");
 const iconPause = document.getElementById("iconPause");
+const errorMsg = document.getElementById("errorMsg");
 
+// Resultaten opslaan in localstorage zodat je ze blijft zien
+// https://blog.logrocket.com/localstorage-javascript-complete-guide/
 document.addEventListener("DOMContentLoaded", () => {
   const saved = localStorage.getItem("results");
   if (saved) {
@@ -252,18 +300,19 @@ function setPlaying(playing) {
   iconPause.style.display = playing ? "block" : "none";
 }
 
-// Hulp van Braham
+// Hulp van Braham - enter drukken om de input te submitten
 textarea.addEventListener("keydown", (e) => {
   if (e.key === "Enter" && !e.shiftKey) {
     e.preventDefault();
     form.dispatchEvent(new Event("submit"));
+    errorMsg.style.display = "none";
   }
 });
 
 function renderResults(results) {
   const resultsContainer = document.getElementById("result");
   resultsContainer.innerHTML = "";
-
+document.querySelector(".artists").style.display = "block";
   // Resultaten visueel weergeven, artiest naam, album cover en nummer.
   results.forEach(({ artist, tracks }) => {
     const artistContainer = document.createElement("div");
@@ -281,7 +330,6 @@ artistContainer.innerHTML = `
 `;
    resultsContainer.appendChild(artistContainer);
 
-artistContainer.style.cursor = "pointer";
 artistContainer.addEventListener("click", () => {
   window.location.href = `/artist/${artist}`;
 });
@@ -299,14 +347,13 @@ artistContainer.querySelectorAll(".covers a").forEach(link => {
 // Error catching wanneer je submit zonder iets in te vullen
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
+  errorMsg.style.display = "none";
   const userInput = textarea.value;
   if (!userInput) {
-    aiAnswer.innerHTML = "Zonder enige input kan ik helaas niks voor je vinden.."
     return;
   }
 
   setPlaying(true);
-  aiAnswer.textContent = "Even zoeken...";
 
   // WebAI call, hulp van Jad 
   if ('LanguageModel' in self) {
@@ -322,9 +369,10 @@ form.addEventListener("submit", async (e) => {
 
 const response = await fetch(`/api?artist=${result}&skip_groq=true`);  const data = await response.json();
   if (data.error) {
-    aiAnswer.textContent = data.error;
-    setPlaying(false);
-    return;
+  errorMsg.textContent = "Sorry, hier kan ik geen artiesten uit halen. Probeer wat anders!";
+  errorMsg.style.display = "block";
+  setPlaying(false);
+  return;
   }
   renderResults(data.results, true);
   localStorage.setItem("results", JSON.stringify(data.results));
@@ -336,7 +384,8 @@ const data = await response.json();
 
 // Error als er niks gevonden kan worden of geen input
 if (data.error) {
-  aiAnswer.textContent = data.error;
+  errorMsg.textContent = "Sorry, hier kan ik geen artiesten uit halen. Probeer wat anders!";
+  errorMsg.style.display = "block";
   setPlaying(false);
   return;
 }
