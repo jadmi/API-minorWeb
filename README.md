@@ -102,6 +102,12 @@ Tot slot ben ik visueel bezig geweest om het een geheel te maken o.a. met een lo
 https://github.com/user-attachments/assets/6424a1a1-96db-450b-ae2c-4c8d3145f72a
 
 
+# Content API
+- Spotify
+
+## Web API's
+- Web AI
+- LocalStorage
 
 
 ## Bronnen
